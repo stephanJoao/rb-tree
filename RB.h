@@ -19,12 +19,18 @@ class RB {
         TYPE getRoot();
         bool empty() { return (root == NULL); };
         
-        bool searchBST(TYPE val);
+        NodeRB<TYPE>* searchBST(TYPE val);
+        void insertRB(TYPE val);
 
         void print();
 
     private:
-        bool auxSearch(NodeRB<TYPE> *n, TYPE val);
+        NodeRB<TYPE>* insertBST(TYPE val, bool* added);
+
+        void leftRotation(NodeRB<TYPE> *n);
+        void rightRotation(NodeRB<TYPE> *n);
+        void doubleLeftRotation(NodeRB<TYPE> *n);
+        void doubleRightRotation(NodeRB<TYPE> *n);
 
         void auxPrint(string prefix, NodeRB<TYPE>* n, bool left);
 
