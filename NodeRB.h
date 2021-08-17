@@ -15,15 +15,15 @@ class NodeRB {
         NodeRB(TYPE val);
         ~NodeRB();
 
-        void setLeft(NodeRB *n) { left = n; };
-        void setRight(NodeRB *n) { right = n; };
-        void setParent(NodeRB *n) { parent = n; };
+        void setLeft(NodeRB<TYPE>* n) { left = n; };
+        void setRight(NodeRB<TYPE>* n) { right = n; };
+        void setParent(NodeRB<TYPE>* n) { parent = n; };
         void setKey(TYPE k) { key = k; };
-        void setColour(char c) { colour = c; };
+        void reColour() { (colour = 'r' ? colour = 'b' : colour = 'r'); };
 
-        NodeRB* getLeft() { return left; };
-        NodeRB* getRight() { return right; };
-        NodeRB* getParent() { return parent; };
+        NodeRB<TYPE>* getLeft() { return left; };
+        NodeRB<TYPE>* getRight() { return right; };
+        NodeRB<TYPE>* getParent() { return parent; };
         TYPE getKey() { return key; };
         char getColour() { return colour; };
 
@@ -33,9 +33,9 @@ class NodeRB {
     public:
 
     private:
-        NodeRB *left;
-        NodeRB *right;
-        NodeRB *parent;
+        NodeRB<TYPE>* left;
+        NodeRB<TYPE>* right;
+        NodeRB<TYPE>* parent;
         TYPE key;
         char colour;
 
