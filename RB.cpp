@@ -61,59 +61,36 @@ void RB<TYPE>::leftRotation(NodeRB<TYPE>* n) {
 template <class TYPE>
 void RB<TYPE>::rightRotation(NodeRB<TYPE>* n) {
     NodeRB<TYPE>* aux = n->getLeft();
-    if(n->getParent() != NULL) {
-        aux->setParent(n->getParent());
-    }  
+    aux->setParent(n->getParent());
     n->setLeft(aux->getRight());
-    if(aux->getRight() != NULL) {
+    if(aux->getRight() != NULL)
         aux->getRight()->setParent(n);
-    }  
     aux->setRight(n);
     n->setParent(aux);
+    if(root == n)
+        root = aux;
+    else {
+        if(aux->getParent()->getLeft() == n)
+            aux->getParent()->setLeft(aux);
+        else
+            aux->getParent()->setRight(aux);
+    }
 }
 
 //AVL double left rotation with parent changing
 template <class TYPE>
 void RB<TYPE>::doubleLeftRotation(NodeRB<TYPE>* n) {
     NodeRB<TYPE>* aux = n->getRight();
-    NodeRB<TYPE>* aux2 = aux->getLeft();
-    if(n->getParent() != NULL) {
-        aux2->setParent(n->getParent());
-    }
-    n->setRight(aux2->getLeft());
-    if(n->getRight() != NULL) {
-        n->getRight()->setParent(n);
-    }
-    aux->setLeft(aux2->getRight());
-    if(aux->getLeft() != NULL) {
-        aux->getLeft()->setParent(aux);
-    }
-    aux2->setLeft(n);
-    n->setParent(aux2);
-    aux2->setRight(aux);
-    aux->setParent(aux2);
+    rightRotation(aux);
+    leftRotation(n);
 }
 
 //AVL double right rotation with parent changing
 template <class TYPE>
 void RB<TYPE>::doubleRightRotation(NodeRB<TYPE>* n) {
     NodeRB<TYPE>* aux = n->getLeft();
-    NodeRB<TYPE>* aux2 = aux->getRight();
-    if(n->getParent() != NULL) {
-        aux2->setParent(n->getParent());
-    }
-    n->setLeft(aux2->getRight());
-    if(n->getLeft() != NULL) {
-        n->getLeft()->setParent(n);
-    }
-    aux->setRight(aux2->getLeft());
-    if(aux->getRight() != NULL) {
-        aux->getRight()->setParent(aux);
-    }
-    aux2->setRight(n);
-    n->setParent(aux2);
-    aux2->setLeft(aux);
-    aux->setParent(aux2);
+    leftRotation(aux);
+    rightRotation(n);
 }
 
 //BST iterative insertion with parent setting that returns the parent pointer 
@@ -155,16 +132,74 @@ NodeRB<TYPE>* RB<TYPE>::insertBST(TYPE val, bool* added) {
 template <class TYPE>
 void RB<TYPE>::insertRB(TYPE val) {
     bool added;
+    //BST iterative insertion
     NodeRB<TYPE>* parent = insertBST(val, &added); 
     if(parent != NULL)
         cout << "Pai do " << val << " é " << parent->getKey() << endl;
     
-    if(val == 88) {
-        NodeRB<TYPE>* child = parent->getRight();
-        NodeRB<TYPE>* grandParent = parent->getParent();
-        cout << grandParent->getKey() << endl;
-        leftRotation(grandParent);
+    //TODO do this recursively or not dunno
+    if(parent != NULL && parent->getParent() != NULL) {
+        if(added) {
+            bool parentOnLeft = false;
+            bool childOnLeft = false;
+            
+            if(parent->getColour() == 'r') {
+                NodeRB<TYPE>* uncle;
+                
+                if(parent->getParent()->getLeft() == parent) {
+                    parentOnLeft = true;
+                    uncle = parent->getParent()->getRight();
+                }
+                else 
+                    uncle = parent->getParent()->getLeft(); 
+                
+                //"Case 3" - red parent and black uncle
+                if(uncle == NULL || uncle->getColour() == 'b') {
+                    if(parent->getKey() > val)
+                        childOnLeft = true;
+
+                    if(parentOnLeft && childOnLeft) {
+                        parent->reColour('b');
+                        parent->getParent()->reColour('r');
+                        rightRotation(parent->getParent());
+                    }
+                    else if(!parentOnLeft && !childOnLeft) {
+                        cout << "Entrou aqui né safado?" << endl;
+                        parent->reColour('b');
+                        parent->getParent()->reColour('r');
+                        leftRotation(parent->getParent());
+                    }
+                    else if(parentOnLeft && !childOnLeft) {
+                        parent->getParent()->reColour('r');
+                        parent->getRight()->reColour('b');
+                        doubleRightRotation(parent->getParent());
+                    }
+                    else {
+                        parent->getParent()->reColour('r');
+                        parent->getLeft()->reColour('b');
+                        doubleLeftRotation(parent->getParent());
+                    }
+                }
+                //"Case 2" - red parent and red uncle
+                else {
+                    uncle->reColour('b');
+                    parent->reColour('b');
+                    parent->getParent()->reColour('r');
+                }
+            }
+
+            /*if(val == 25) {
+                NodeRB<TYPE>* child = parent->getRight();
+                NodeRB<TYPE>* grandParent = parent->getParent();
+                cout << grandParent->getKey() << endl;
+                doubleRightRotation(grandParent);
+            }*/
+
+        }
     }
+    //Fix the root (includes "Case 1")
+    if(root->getColour() == 'r')
+        root->reColour('b');
 }
 
 //Auxiliary to printing
@@ -181,6 +216,8 @@ void RB<TYPE>::auxPrint(string prefix, NodeRB<TYPE>* n, bool left) {
             cout << red << n->getKey() << reset << endl;
         else
             cout << black << n->getKey() << reset << endl;
+        //if(n->getParent() != NULL)
+        //    cout << red << n->getKey() << reset << " Pai " << n->getParent()->getKey() << endl;
         auxPrint(prefix + (left ? "│   " : "    "), n->getLeft(), true);
         auxPrint(prefix + (left ? "│   " : "    "), n->getRight(), false);
     }

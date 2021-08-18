@@ -19,7 +19,7 @@ class NodeRB {
         void setRight(NodeRB<TYPE>* n) { right = n; };
         void setParent(NodeRB<TYPE>* n) { parent = n; };
         void setKey(TYPE k) { key = k; };
-        void reColour() { (colour = 'r' ? colour = 'b' : colour = 'r'); };
+        void reColour(char c) { colour = c; };
 
         NodeRB<TYPE>* getLeft() { return left; };
         NodeRB<TYPE>* getRight() { return right; };
