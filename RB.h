@@ -25,13 +25,15 @@ class RB {
         void print();
 
     private:
-        NodeRB<TYPE>* insertBST(TYPE val, bool* added);
-        NodeRB<TYPE>* fixInsertRB(NodeRB<TYPE>* parent, TYPE val);
-
+        void deleteTree(NodeRB<TYPE>* current);
+        
         void leftRotation(NodeRB<TYPE> *n);
         void rightRotation(NodeRB<TYPE> *n);
         void doubleLeftRotation(NodeRB<TYPE> *n);
         void doubleRightRotation(NodeRB<TYPE> *n);
+
+        NodeRB<TYPE>* fixInsertRB(NodeRB<TYPE>* parent, TYPE val);
+        NodeRB<TYPE>* insertBST(TYPE val, bool* added);
 
         void auxPrint(string prefix, NodeRB<TYPE>* n, bool left);
 

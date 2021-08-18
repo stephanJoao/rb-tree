@@ -9,7 +9,24 @@ RB<TYPE>::RB() {
 //RB destructor
 template <class TYPE>
 RB<TYPE>::~RB() {
-    //dtor
+    //deleteTree(root);
+}
+
+template <class TYPE>
+void RB<TYPE>::deleteTree(NodeRB<TYPE>* current) {
+    //TODO fix it!
+    if(current != NULL) {
+        if(current->getLeft() != NULL) {
+            deleteTree(current->getLeft());
+            cout << "Child is not NULL" << endl;
+        }
+        if(current->getRight() != NULL) {
+            deleteTree(current->getRight());
+            cout << "Child is not NULL" << endl;
+        }
+        cout << "Deleting " << current->getKey() << endl; 
+        delete current;
+    }
 }
 
 template <class TYPE>
@@ -22,7 +39,7 @@ TYPE RB<TYPE>::getRoot() {
     }
 }
 
-//BST iterative search that returns the node
+//BST iterative search that returns the node (used in insertion)
 template <class TYPE>
 NodeRB<TYPE>* RB<TYPE>::searchBST(TYPE val) {
     NodeRB<TYPE>* n = root;
@@ -196,10 +213,6 @@ NodeRB<TYPE>* RB<TYPE>::fixInsertRB(NodeRB<TYPE>* parent, TYPE val) {
     if(root->getColour() == 'r')
         root->reColour('b');
 
-    if(parent != NULL)
-        cout << parent->getKey() << endl;
-    else
-        cout << "NULL" << endl;
     return parent;
 }
 
@@ -209,9 +222,8 @@ void RB<TYPE>::insertRB(TYPE val) {
     bool added;
     //BST iterative insertion
     NodeRB<TYPE>* parent = insertBST(val, &added); 
-    if(parent != NULL)
-        cout << "Pai do " << val << " é " << parent->getKey() << endl;
-    
+    //TODO do it recursively maybe? Would be cool!
+    //RB iterative fixing
     if(added) {
         while(parent != NULL && parent->getParent() != NULL) {
             parent = fixInsertRB(parent, val);

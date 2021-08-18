@@ -62,6 +62,7 @@ template <class TYPE>
 NodeRB<TYPE>::~NodeRB() {
     delete left;
     delete right;
+    delete parent;
 }
 
 #endif // NodeRB_H
