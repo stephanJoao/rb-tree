@@ -26,6 +26,7 @@ class RB {
 
     private:
         NodeRB<TYPE>* insertBST(TYPE val, bool* added);
+        NodeRB<TYPE>* fixInsertRB(NodeRB<TYPE>* parent, TYPE val);
 
         void leftRotation(NodeRB<TYPE> *n);
         void rightRotation(NodeRB<TYPE> *n);
