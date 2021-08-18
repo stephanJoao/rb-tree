@@ -12,8 +12,15 @@ int main() {
   cout << "normal?" << endl;*/
   RB<int> flamengo;
   //flamengo.insertRB(10);
-  flamengo.insertRB(30);
-  flamengo.insertRB(70);
-  flamengo.insertRB(88);
+  flamengo.insertRB(1);
+  flamengo.insertRB(2);
+  flamengo.insertRB(3);
+  flamengo.insertRB(4);
+  flamengo.insertRB(5);
+  flamengo.insertRB(6);
+  flamengo.insertRB(7);
+  //flamengo.insertRB(8);
+  //flamengo.insertRB(9);
+  
   flamengo.print();
 }
