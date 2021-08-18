@@ -128,6 +128,81 @@ NodeRB<TYPE>* RB<TYPE>::insertBST(TYPE val, bool* added) {
     return past;
 }
 
+//Fixes and balances the tree using AVL rotations and recolouring
+template <class TYPE>
+NodeRB<TYPE>* RB<TYPE>::fixInsertRB(NodeRB<TYPE>* parent, TYPE val) {
+    bool parentOnLeft = false;
+    bool childOnLeft = false;
+    bool redChild = false;
+    
+    if(parent->getLeft() != NULL && parent->getLeft()->getColour() == 'r') {
+        childOnLeft = true;
+        redChild = true;
+    }
+    else if(parent->getRight() != NULL && parent->getRight()->getColour() == 'r')
+        redChild = true;
+    else 
+        return parent->getParent();
+            
+    if(parent->getColour() == 'r' && redChild) {
+        NodeRB<TYPE>* uncle;
+                
+        if(parent->getParent()->getLeft() == parent) {
+            parentOnLeft = true;
+            uncle = parent->getParent()->getRight();
+        }
+        else 
+            uncle = parent->getParent()->getLeft(); 
+                
+        //"Case 3" - red parent and black uncle
+        if(uncle == NULL || uncle->getColour() == 'b') {
+            if(parentOnLeft && childOnLeft) {
+                parent->reColour('b');
+                parent->getParent()->reColour('r');
+                rightRotation(parent->getParent());
+                parent = parent->getParent();
+            }
+            else if(!parentOnLeft && !childOnLeft) {
+                parent->reColour('b');
+                parent->getParent()->reColour('r');
+                leftRotation(parent->getParent());
+                parent = parent->getParent();
+            }
+            else if(parentOnLeft && !childOnLeft) {
+                parent->getParent()->reColour('r');
+                parent->getRight()->reColour('b');
+                doubleRightRotation(parent->getParent());
+                parent = parent->getParent()->getParent();
+            }
+            else {
+                parent->getParent()->reColour('r');
+                parent->getLeft()->reColour('b');
+                doubleLeftRotation(parent->getParent());
+                parent = parent->getParent()->getParent();
+            }
+        }
+        //"Case 2" - red parent and red uncle
+        else {
+            uncle->reColour('b');
+            parent->reColour('b');
+            parent->getParent()->reColour('r');
+            parent = parent->getParent()->getParent();
+        }
+    }
+    else 
+        return parent->getParent();
+
+    //Fix the root (includes "Case 1")
+    if(root->getColour() == 'r')
+        root->reColour('b');
+
+    if(parent != NULL)
+        cout << parent->getKey() << endl;
+    else
+        cout << "NULL" << endl;
+    return parent;
+}
+
 //RB insertion using iterative BST insertion //with colour and balance fixing
 template <class TYPE>
 void RB<TYPE>::insertRB(TYPE val) {
@@ -137,69 +212,11 @@ void RB<TYPE>::insertRB(TYPE val) {
     if(parent != NULL)
         cout << "Pai do " << val << " é " << parent->getKey() << endl;
     
-    //TODO do this recursively or not dunno
-    if(parent != NULL && parent->getParent() != NULL) {
-        if(added) {
-            bool parentOnLeft = false;
-            bool childOnLeft = false;
-            
-            if(parent->getColour() == 'r') {
-                NodeRB<TYPE>* uncle;
-                
-                if(parent->getParent()->getLeft() == parent) {
-                    parentOnLeft = true;
-                    uncle = parent->getParent()->getRight();
-                }
-                else 
-                    uncle = parent->getParent()->getLeft(); 
-                
-                //"Case 3" - red parent and black uncle
-                if(uncle == NULL || uncle->getColour() == 'b') {
-                    if(parent->getKey() > val)
-                        childOnLeft = true;
-
-                    if(parentOnLeft && childOnLeft) {
-                        parent->reColour('b');
-                        parent->getParent()->reColour('r');
-                        rightRotation(parent->getParent());
-                    }
-                    else if(!parentOnLeft && !childOnLeft) {
-                        cout << "Entrou aqui né safado?" << endl;
-                        parent->reColour('b');
-                        parent->getParent()->reColour('r');
-                        leftRotation(parent->getParent());
-                    }
-                    else if(parentOnLeft && !childOnLeft) {
-                        parent->getParent()->reColour('r');
-                        parent->getRight()->reColour('b');
-                        doubleRightRotation(parent->getParent());
-                    }
-                    else {
-                        parent->getParent()->reColour('r');
-                        parent->getLeft()->reColour('b');
-                        doubleLeftRotation(parent->getParent());
-                    }
-                }
-                //"Case 2" - red parent and red uncle
-                else {
-                    uncle->reColour('b');
-                    parent->reColour('b');
-                    parent->getParent()->reColour('r');
-                }
-            }
-
-            /*if(val == 25) {
-                NodeRB<TYPE>* child = parent->getRight();
-                NodeRB<TYPE>* grandParent = parent->getParent();
-                cout << grandParent->getKey() << endl;
-                doubleRightRotation(grandParent);
-            }*/
-
+    if(added) {
+        while(parent != NULL && parent->getParent() != NULL) {
+            parent = fixInsertRB(parent, val);
         }
-    }
-    //Fix the root (includes "Case 1")
-    if(root->getColour() == 'r')
-        root->reColour('b');
+    }     
 }
 
 //Auxiliary to printing
